@@ -1,0 +1,119 @@
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+
+model Account {
+  id                 String    @id @default(cuid()) @map("_id")
+  idToken            String
+  userId             String    @unique
+  providerType       String
+  provider           String
+  providerAccountId  String    @unique
+  refreshToken       String?
+  accessToken        String?
+  accessTokenExpires DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  user               User    @relation(fields: [userId], references: [googleId])
+
+  @@unique([provider, providerAccountId])
+}
+
+model User {
+  id            String    @id @default(cuid()) @map("_id")
+  googleId      String?   @unique
+  name          String?
+  email         String   @unique
+  role          String?
+  subRole       String?
+  blocked       Boolean   @default(false)
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  account       Account?  
+}
+
+model Exam {
+  exam_id String @id @default(cuid()) @map("_id")
+  date DateTime
+  start_time String
+  end_time String
+  exam_code String @unique
+  venue String?
+  year String?
+  locked Boolean @default(false)
+  sessions ExamSession[]
+  exam_name ExamName @relation(fields: [exam_name_id], references: [exam_name_id], onDelete: Cascade)
+  exam_name_id String
+  archived Boolean @default(false)
+}
+
+model ExamName{
+  exam_name_id String @id @default(cuid()) @map("_id")
+  exam_name String @unique
+  exams Exam[]
+  archived Boolean @default(false)
+}
+
+model Staff {
+  staff_id String @id @default(cuid()) @map("_id")
+  staff_name String
+  staff_role String
+  department String
+  assignments StaffAssignment[]
+  attendances Attendance[]
+  archived Boolean @default(false)
+}
+
+model Venue {
+  venue_id String @id @default(cuid()) @map("_id")
+  name String @unique
+  examSessions ExamSession[]
+  archived Boolean @default(false)
+}
+
+model ExamSession {
+  exam_session_id String @id @default(cuid()) @map("_id")
+  exam_id String @unique
+  createdAt DateTime @default(now())
+  createdBy String
+  venue_id String
+  exam Exam @relation(fields: [exam_id], references: [exam_id], onDelete: Cascade)
+  venue Venue @relation(fields: [venue_id], references: [venue_id])
+  assignments StaffAssignment[]
+  attendances Attendance[]
+  archived Boolean @default(false)
+}
+
+model StaffAssignment {
+  id String @id @default(cuid()) @map("_id")
+  staff_id String
+  exam_session_id String
+  role String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  staff Staff @relation(fields: [staff_id], references: [staff_id])
+  examSession ExamSession @relation(fields: [exam_session_id], references: [exam_session_id], onDelete: Cascade)
+  archived Boolean @default(false)
+  @@unique([staff_id, exam_session_id])
+}
+
+model Attendance {
+  attendance_id String @id @default(cuid()) @map("_id")
+  exam_session_id String
+  staff_id String
+  attendance_status String?
+  exam_session ExamSession @relation(fields: [exam_session_id], references: [exam_session_id], onDelete: Cascade)
+  staff Staff @relation(fields: [staff_id], references: [staff_id])
+  archived Boolean @default(false)
+  @@unique([staff_id, exam_session_id], name: "staff_id_exam_session_id")
+}
