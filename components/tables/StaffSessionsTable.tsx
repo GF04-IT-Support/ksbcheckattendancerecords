@@ -53,7 +53,7 @@ function StaffSessionsTable({
     }
   }, [examNamesError, staffError]);
 
-  const isDisabled = selectedStaffId === null;
+  const isDisabled = () => selectedStaffId === null || selectedStaffId === "";
 
   const handleSubmit = async () => {
     try {
@@ -218,9 +218,9 @@ function StaffSessionsTable({
           </Autocomplete>
 
           <Button
-            disabled={isDisabled}
+            disabled={isDisabled()}
             onPress={handleSubmit}
-            color={`${isDisabled ? "default" : "primary"}`}
+            color={`${isDisabled() ? "default" : "primary"}`}
           >
             Fetch
           </Button>
@@ -230,7 +230,7 @@ function StaffSessionsTable({
           selectionMode="multiple"
           placeholder="Select attendance status"
           selectedKeys={attendanceFilter}
-          className="mt-5 sm:mt-0 max-sm:pb-4 w-[180px]"
+          className="max-sm:pb-4 w-[180px]"
           onSelectionChange={(keys: any) =>
             setAttendanceFilter(Array.from(keys))
           }

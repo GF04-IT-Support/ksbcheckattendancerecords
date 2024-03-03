@@ -13,10 +13,6 @@ const Header = () => {
   return (
     <Navbar maxWidth="full" shouldHideOnScroll isBordered>
       <NavbarBrand className="flex items-center gap-2 max-w-full">
-        <NavbarMenuToggle
-          aria-label="Toggle menu"
-          className="min-[845px]:hidden"
-        />
         <Link href="/">
           <Image
             src="/ksb.jpg"
@@ -26,7 +22,7 @@ const Header = () => {
             className="rounded-full"
           />
         </Link>
-        <p className="font-bold text-inherit max-sm:hidden">
+        <p className="font-bold text-inherit">
           <Link>KSB Staff Attendance Check</Link>
         </p>
       </NavbarBrand>
