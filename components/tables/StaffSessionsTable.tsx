@@ -219,7 +219,7 @@ function StaffSessionsTable({
 
           <Button
             disabled={isDisabled()}
-            onPress={handleSubmit}
+            onSubmit={handleSubmit}
             color={`${isDisabled() ? "default" : "primary"}`}
           >
             Fetch
