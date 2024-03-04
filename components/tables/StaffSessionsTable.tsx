@@ -273,7 +273,7 @@ function StaffSessionsTable({
           <TableColumn key="staff_name">Staff Name</TableColumn>
           <TableColumn key="staff_role">Staff Role</TableColumn>
           <TableColumn key="attendance">Attendance</TableColumn>
-          <TableColumn key="weight">Weight</TableColumn>
+          {/* <TableColumn key="weight">Weight</TableColumn> */}
         </TableHeader>
 
         {isEmpty ? (
