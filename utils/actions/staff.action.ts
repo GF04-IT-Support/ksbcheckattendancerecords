@@ -5,6 +5,9 @@ import prisma from "@/utils/prisma";
 export async function getExamNames() {
   try {
     const examNames = await prisma.examName.findMany();
+    if (examNames.length > 1) {
+      examNames.pop();
+    }
 
     return examNames.reverse();
   } catch (err) {
