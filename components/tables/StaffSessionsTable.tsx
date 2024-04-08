@@ -21,6 +21,13 @@ import {
 } from "@nextui-org/react";
 import { fetchStaffSessions } from "@/utils/actions/staff.action";
 import { sortDataByStartTime } from "@/helpers/date.helpers";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import moment from "moment";
+import { useStyles } from "@/helpers/styles.helpers";
+import { AiOutlineClose } from "react-icons/ai";
 
 interface StaffSessionsTableProps {
   staff: StaffInfo[];
@@ -37,15 +44,17 @@ function StaffSessionsTable({
   examNamesError,
   staffError,
 }: StaffSessionsTableProps) {
+  const rowsPerPage = 10;
   const [selectedId, setSelectedId] = useState(
     examNames.length > 0 ? examNames[0].exam_name_id : ""
   );
   const [selectedStaffId, setSelectedStaffId] = useState<string>("");
   const [filteredData, setFilteredData] = useState<any>([]);
   const [attendanceFilter, setAttendanceFilter] = useState(["Present"]);
+  const [date, setDate] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const rowsPerPage = 10;
   const [page, setPage] = useState(1);
+  const classes = useStyles();
 
   useEffect(() => {
     if (staffError || examNamesError) {
@@ -138,9 +147,18 @@ function StaffSessionsTable({
       (item) => JSON.parse(item as string)
     );
 
-    const filteredItems = uniqueItems.filter((item) =>
+    let filteredItems = uniqueItems.filter((item) =>
       attendanceFilter.includes(item.attendance)
     );
+
+    if (date) {
+      const searchDate = new Date(date).toLocaleDateString("en-GB");
+
+      filteredItems = filteredItems.filter((item: any) => {
+        const itemDate = new Date(item.date).toLocaleDateString("en-GB");
+        return itemDate === searchDate;
+      });
+    }
 
     filteredItems.sort((a: any, b: any) => {
       const nameComparison = a.staff_name.localeCompare(b.staff_name);
@@ -156,7 +174,7 @@ function StaffSessionsTable({
     });
 
     return filteredItems;
-  }, [filteredData, attendanceFilter]);
+  }, [filteredData, attendanceFilter, date]);
 
   const pages = Math.ceil(flattenedItems?.length / rowsPerPage);
 
@@ -166,6 +184,13 @@ function StaffSessionsTable({
 
     return flattenedItems?.slice(start, end);
   }, [page, flattenedItems]);
+
+  const handleDateChange = (date: moment.Moment | Date | null) => {
+    if (date) {
+      const newQuery: any = date.toISOString().split("T")[0];
+      setDate(newQuery);
+    }
+  };
 
   const loadingState = isLoading ? "loading" : "idle";
   const isEmpty = flattenedItems.length === 0 && !isLoading;
@@ -199,7 +224,7 @@ function StaffSessionsTable({
         </Select>
       </div>
 
-      <div className="flex max-sm:flex-col sm:justify-between items-center">
+      <div className="flex max-[900px]:flex-col sm:justify-between items-center">
         <div className="flex py-4 gap-4 justify-center items-center">
           <Autocomplete
             label="Staff Name"
@@ -208,7 +233,10 @@ function StaffSessionsTable({
             placeholder="Search Staff name"
             className="max-w-xs"
             selectedKey={selectedStaffId}
-            onSelectionChange={(e: any) => setSelectedStaffId(e)}
+            onSelectionChange={(e: any) => {
+              setSelectedStaffId(e);
+              setFilteredData([]);
+            }}
           >
             {(item: StaffInfo) => (
               <AutocompleteItem key={item.staff_id}>
@@ -225,23 +253,46 @@ function StaffSessionsTable({
             Fetch
           </Button>
         </div>
-        <Select
-          label="Attendance Status"
-          selectionMode="multiple"
-          placeholder="Select attendance status"
-          selectedKeys={attendanceFilter}
-          className="max-sm:pb-4 w-[180px]"
-          onSelectionChange={(keys: any) =>
-            setAttendanceFilter(Array.from(keys))
-          }
-          disallowEmptySelection
-        >
-          {attendanceOptions.map((status) => (
-            <SelectItem key={status} value={status} className="capitalize">
-              {status}
-            </SelectItem>
-          ))}
-        </Select>
+        <div className="flex gap-4 items-center">
+          <LocalizationProvider dateAdapter={AdapterMoment}>
+            <DemoContainer components={["DatePicker"]}>
+              <div className="overflow-hidden py-2 relative">
+                <DatePicker
+                  label="Filter by Date"
+                  value={date ? moment(new Date(date)) : null}
+                  className={`${classes.datePicker} w-full md:w-[200px]`}
+                  onChange={handleDateChange}
+                />
+                {date && (
+                  <AiOutlineClose
+                    className="cursor-pointer hover:opacity-50 absolute top-5 right-10"
+                    onClick={() => setDate(null)}
+                    size={22}
+                    color="gray"
+                  />
+                )}
+              </div>
+            </DemoContainer>
+          </LocalizationProvider>
+
+          <Select
+            label="Attendance Status"
+            selectionMode="multiple"
+            placeholder="Select attendance status"
+            selectedKeys={attendanceFilter}
+            className="max-sm:pb-4 w-[180px]"
+            onSelectionChange={(keys: any) =>
+              setAttendanceFilter(Array.from(keys))
+            }
+            disallowEmptySelection
+          >
+            {attendanceOptions.map((status) => (
+              <SelectItem key={status} value={status} className="capitalize">
+                {status}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
       </div>
 
       <Table

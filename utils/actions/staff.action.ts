@@ -6,7 +6,7 @@ export async function getExamNames() {
   try {
     const examNames = await prisma.examName.findMany();
 
-    return examNames;
+    return examNames.reverse();
   } catch (err) {
     return { message: "Error in fetching exam names" };
   }
