@@ -253,7 +253,7 @@ function StaffSessionsTable({
             Fetch
           </Button>
         </div>
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-4 pb-2 items-center">
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <DemoContainer components={["DatePicker"]}>
               <div className="overflow-hidden py-2 relative">
@@ -280,7 +280,7 @@ function StaffSessionsTable({
             selectionMode="multiple"
             placeholder="Select attendance status"
             selectedKeys={attendanceFilter}
-            className="max-sm:pb-4 w-[180px]"
+            className=" w-[180px]"
             onSelectionChange={(keys: any) =>
               setAttendanceFilter(Array.from(keys))
             }
