@@ -63,6 +63,7 @@ model ExamName{
   exams Exam[]
   archived Boolean @default(false)
   selected Boolean @default(false)
+  order String?
 }
 
 model Staff {

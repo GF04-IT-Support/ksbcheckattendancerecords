@@ -4,8 +4,14 @@ import prisma from "@/utils/prisma";
 
 export async function getExamNames() {
   try {
-    const examNames = await prisma.examName.findMany();
-    examNames.shift();
+    const examNames = await prisma.examName.findMany({
+      where: {
+        selected: true,
+      },
+      orderBy: {
+        order: "desc",
+      },
+    });
 
     return examNames;
   } catch (err) {
