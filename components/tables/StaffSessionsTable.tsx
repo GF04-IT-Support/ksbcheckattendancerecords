@@ -46,7 +46,9 @@ function StaffSessionsTable({
 }: StaffSessionsTableProps) {
   const rowsPerPage = 10;
   const [selectedId, setSelectedId] = useState(
-    examNames.length > 0 ? examNames[0].exam_name_id : ""
+    examNames.length > 0
+      ? examNames.map((examName) => examName.exam_name_id).join(",")
+      : ""
   );
   const [selectedStaffId, setSelectedStaffId] = useState<string>("");
   const [filteredData, setFilteredData] = useState<any>([]);
@@ -212,6 +214,7 @@ function StaffSessionsTable({
           disabled={examNames.length === 0}
           disallowEmptySelection
           selectionMode="multiple"
+          isMultiline
         >
           {(examName) => (
             <SelectItem
