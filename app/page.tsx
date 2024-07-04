@@ -1,6 +1,8 @@
 import StaffSessionsTable from "@/components/tables/StaffSessionsTable";
 import { getExamNames, getStaff } from "@/utils/actions/staff.action";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const staffResponse = await getStaff();
   const examNamesResponse = await getExamNames();
